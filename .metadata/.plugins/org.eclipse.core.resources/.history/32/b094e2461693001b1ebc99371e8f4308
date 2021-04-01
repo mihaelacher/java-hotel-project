@@ -95,7 +95,7 @@ public class RoomTypesPanel extends JPanel{
 		table.addMouseListener(new MouseAction());
 		
 		// Refresh table data from DB
-		refreshTable(table, "room_types");
+		refreshTable(table, "room_type");
 		// Clear input fields
 		clearRoomTypesForm();
 	}
@@ -105,7 +105,7 @@ public class RoomTypesPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			conn = DBConnection.getConnection();
-			String sql="update room_types set name = ?, price_per_day = ? where id = ?";
+			String sql="update room_type set name = ?, price_per_day = ? where id = ?";
 		
 			try {
 				state=conn.prepareStatement(sql);
@@ -117,7 +117,7 @@ public class RoomTypesPanel extends JPanel{
 				// Clear input fields
 				clearRoomTypesForm();
 				// Refresh from DB with new data
-				refreshTable(table,"room_types");
+				refreshTable(table,"room_type");
 				
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -155,7 +155,7 @@ public class RoomTypesPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			conn = DBConnection.getConnection();
-			String sql="insert into room_types values(null, ?,?)";
+			String sql="insert into room_type values(null, ?,?)";
 		
 			try {
 				state=conn.prepareStatement(sql);
@@ -166,7 +166,7 @@ public class RoomTypesPanel extends JPanel{
 				// Clear input fields
 				clearRoomTypesForm();
 				// Refresh from DB with new data
-				refreshTable(table,"room_types");
+				refreshTable(table,"room_type");
 				
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -181,7 +181,7 @@ public class RoomTypesPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			conn = DBConnection.getConnection();
-			String sql="delete from room_types where id=?";
+			String sql="delete from room_type where id=?";
 			
 			try {
 				state = conn.prepareStatement(sql);
@@ -190,7 +190,7 @@ public class RoomTypesPanel extends JPanel{
 				
 				clearRoomTypesForm();
 				
-				refreshTable(table, "room_types");
+				refreshTable(table, "room_type");
 				id=-1;
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -204,7 +204,7 @@ public class RoomTypesPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			conn=DBConnection.getConnection();
-			String sql="select * from room_types where name=?";
+			String sql="select * from room_type where name=?";
 			
 			try {
 				state=conn.prepareStatement(sql);
@@ -223,7 +223,7 @@ public class RoomTypesPanel extends JPanel{
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			refreshTable(table, "room_types");
+			refreshTable(table, "room_type");
 		}
 		
 	}
