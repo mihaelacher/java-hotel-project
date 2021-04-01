@@ -190,7 +190,7 @@ public class RoomsPanel extends JPanel {
 		roomTypeCombo.addItem(new ComboItem("0", "Изберете тип стая"));
 		
 		conn = DBConnection.getConnection();
-		String sql = "select id, name from room_types";
+		String sql = "select id, name from room_type";
 
 		try {
 			state = conn.prepareStatement(sql);

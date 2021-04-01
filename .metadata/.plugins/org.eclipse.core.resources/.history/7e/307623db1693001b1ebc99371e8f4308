@@ -143,7 +143,7 @@ public class RoomsPanel extends JPanel {
 		try {
 			// Get table data with help of joins in order to avoid using id values from referenced tables
 			state = conn.prepareStatement(
-					"select rooms.id, rooms.room_number, room_types.name, room_status.status from rooms join room_types on room_types.id = rooms.room_type_id join room_status on room_status.id = rooms.room_status_id;");
+					"select rooms.id, rooms.room_number, room_type.name, room_status.status from rooms join room_type on room_type.id = rooms.room_type_id join room_status on room_status.id = rooms.room_status_id;");
 			result = state.executeQuery();
 			table.setModel(new MyModel(result));
 
@@ -190,7 +190,7 @@ public class RoomsPanel extends JPanel {
 		roomTypeCombo.addItem(new ComboItem("0", "Изберете тип стая"));
 		
 		conn = DBConnection.getConnection();
-		String sql = "select id, name from room_types";
+		String sql = "select id, name from room_type";
 
 		try {
 			state = conn.prepareStatement(sql);
