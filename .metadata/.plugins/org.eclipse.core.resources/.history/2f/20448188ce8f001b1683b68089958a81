@@ -1,0 +1,38 @@
+package ActionListeners;
+
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class ShowRoomTypes extends JPanel {
+	
+	// Define panels
+	JPanel upPanel = new JPanel();
+	JPanel midPanel = new JPanel();
+	JPanel dounPanel = new JPanel();
+	
+	// Define labels
+	JLabel nameLabel = new JLabel("Наименование");
+	JLabel priceLabel = new JLabel("Цена за нощувка");
+	
+	// Define text fields
+	JTextField nameTF = new JTextField();
+	JTextField priceTF = new JTextField();
+
+		
+	public ShowRoomTypes(JPanel panel) {
+		this.setLayout(new GridLayout(2,2));
+		
+		this.add(nameLabel);
+		this.add(nameTF);
+		this.add(priceLabel);
+		this.add(priceTF);
+		
+	}
+		
+}

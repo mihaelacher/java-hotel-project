@@ -1,0 +1,74 @@
+package Helpers;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.swing.JTextField;
+
+import Core.DBConnection;
+
+public class BuildRoomTypesHelper {
+	
+	static Connection conn = DBConnection.getConnection();
+	static PreparedStatement state = null;
+	static ResultSet result = null;
+	static int id = -1;
+	
+	public static void clearRoomTypesForm(JTextField nameTF, JTextField priceTF) {
+		nameTF.setText("");
+		priceTF.setText("");
+	}
+	
+	public static void deleteRoomType(JTextField nameTF, JTextField priceTF) {
+		
+		String sql="delete from room_type where id=?";
+		
+		try {
+			state = conn.prepareStatement(sql);
+			state.setInt(1, id);
+			state.execute();
+			BuildRoomTypesHelper.clearRoomTypesForm(nameTF, priceTF);
+			id=-1;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static ResultSet searchRoomType(JTextField nameTF, JTextField priceTF) {
+		
+		String sql="select * from room_type where name=?";
+		
+		try {
+			state=conn.prepareStatement(sql);
+			state.setString(1, nameTF.getText());
+			result=state.executeQuery();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	public static void addRoomType(JTextField nameTF, JTextField priceTF) {
+		
+		String sql="insert into room_type values(null, ?,?)";
+		
+		try {
+			state=conn.prepareStatement(sql);
+			state.setString(1, nameTF.getText());
+			state.setDouble(2, Double.parseDouble(priceTF.getText()));
+			
+			state.execute();
+			BuildRoomTypesHelper.clearRoomTypesForm(nameTF, priceTF);
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+}

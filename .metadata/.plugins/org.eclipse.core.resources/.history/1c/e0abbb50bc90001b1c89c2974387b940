@@ -1,0 +1,70 @@
+package Core;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.SQLException;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import Panels.GuestsPanel;
+import Panels.RoomsPanel;
+
+public class NewFrame extends JFrame{
+	
+	Container mainContainer = this.getContentPane();
+	
+	GuestsPanel guestsPanel=new GuestsPanel();
+	RoomsPanel roomsPanel=new RoomsPanel();
+	JPanel reservationsPanel=new JPanel();
+	JPanel paymentPanel=new JPanel();
+	
+	JTabbedPane tab=new JTabbedPane();
+	
+	NewFrame(){
+		this.setSize(400, 600);
+		this.setLayout(new FlowLayout());
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		
+		tab.add("Гости",guestsPanel);
+		tab.add("Стаи",roomsPanel);
+		tab.add("Резервации",reservationsPanel);
+		tab.add("Плащания",paymentPanel);
+		
+		tab.addChangeListener(new ChangeListener() {
+			
+			
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				switch (tab.getSelectedIndex()) {
+				case 0:
+					guestsPanel.setVisible(true);
+					break;
+				case 1:
+					roomsPanel.setVisible(true);
+					break;
+				case 2:
+					reservationsPanel.setVisible(true);
+					break;
+				case 3:
+					paymentPanel.setVisible(true);
+					break;
+				}
+				
+			}
+			
+		});
+		
+		this.add(tab);
+		this.setVisible(true);
+	}
+}

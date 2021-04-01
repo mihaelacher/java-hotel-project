@@ -1,0 +1,296 @@
+package Panels;
+
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+
+import Core.ComboItem;
+import Core.DBConnection;
+import Core.MyModel;
+import Helpers.BuildRoomTypesHelper;
+import Panels.RoomTypesPanel.AddRoomTypeAction;
+import Panels.RoomTypesPanel.DeleteRoomTypeAction;
+import Panels.RoomTypesPanel.MouseAction;
+import Panels.RoomTypesPanel.RefreshRoomTypeAction;
+import Panels.RoomTypesPanel.SearchRoomTypeAction;
+
+public class RoomsPanel extends JPanel{
+	
+	Connection conn=null;
+	PreparedStatement state=null;
+	ResultSet result;
+	int id=-1;
+
+	// DEFINE ROOM OBJECTS
+	
+	// Define room panels
+	JPanel roomsUpPanel = new JPanel();
+	JPanel roomsMidPanel = new JPanel();
+	JPanel roomsDownPanel = new JPanel();
+	
+	// Define room type labels
+	JLabel roomNubmerLabel = new JLabel("Номер на стаята");
+	JLabel roomTypeLabel = new JLabel("Тип на стаята");
+	JLabel roomStatusLabel = new JLabel("Статус на стаята");
+	
+	// Define room fields
+	JTextField roomNubmerTF = new JTextField();
+	JComboBox<ComboItem> roomStatusCombo=new JComboBox<ComboItem>();
+	JComboBox<ComboItem> roomTypeCombo=new JComboBox<ComboItem>();
+	
+	// Define room buttons
+	JButton roomsAddBt=new JButton("Добавяне");
+	JButton roomsDeleteBt=new JButton("Изтриване");
+	JButton roomsEditBt=new JButton("Промяна");
+	JButton roomsSearchBt=new JButton("Търсене по име");
+	JButton roomsRefreshBt=new JButton("Обнови");
+	
+	// Define room table
+	JTable table = new JTable();
+	JScrollPane myScroll = new JScrollPane(table);
+	
+	public RoomsPanel()
+	{	
+		this.setLayout(new GridLayout(3,1));
+		
+		roomsUpPanel.setLayout(new GridLayout(6,2));
+		
+		roomsUpPanel.add(roomNubmerLabel);
+		roomsUpPanel.add(roomNubmerTF);
+		roomsUpPanel.add(roomTypeLabel);
+		roomsUpPanel.add(roomTypeCombo);
+		roomsUpPanel.add(roomStatusLabel);
+		roomsUpPanel.add(roomStatusCombo);
+		
+		this.add(roomsUpPanel);
+		
+		roomsMidPanel.setLayout(new FlowLayout());
+		
+		roomsMidPanel.add(roomsAddBt);
+		roomsMidPanel.add(roomsDeleteBt);
+		roomsMidPanel.add(roomsEditBt);
+		roomsMidPanel.add(roomsSearchBt);
+		roomsMidPanel.add(roomsRefreshBt);
+		
+		this.add(roomsMidPanel);
+		
+		myScroll.setPreferredSize(new Dimension(350, 100));
+		roomsDownPanel.add(myScroll);
+		this.add(roomsDownPanel);
+		
+		roomsAddBt.addActionListener(new AddRoomAction());
+		roomsDeleteBt.addActionListener(new DeleteRoomAction());
+		roomsSearchBt.addActionListener(new SearchRoomAction());
+		roomsRefreshBt.addActionListener(new RefreshRoomAction());
+		
+		table.addMouseListener(new MouseAction());
+		
+		refreshTable(table, "rooms");
+		clearRoomsForm();
+	}
+	
+	public void refreshTable(JTable table, String tabDB) {
+		conn = DBConnection.getConnection();
+		
+		try {
+			state=conn.prepareStatement("select rooms.id, room_type.name, room_status.status from rooms"
+					+ "join room_type on room_type.id = rooms.room_type_id"
+					+ "join room_status on room_status.id = rooms.room_status_id");
+			result=state.executeQuery();
+			table.setModel(new MyModel(result));
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearRoomsForm() {
+		roomNubmerTF.setText("");
+		setRoomTypeComboValues();
+		setRoomStatusComboValues();
+	}
+	
+	/*
+	 * public void refreshCombo() {
+	 * 
+	 * personCombo.removeAllItems(); conn=DBConnection.getConnection(); String
+	 * sql="select id, fname, lname from person"; String item="";
+	 * 
+	 * try { state=conn.prepareStatement(sql); result=state.executeQuery();
+	 * while(result.next()) {
+	 * item=result.getObject(1).toString()+"."+result.getObject(2).toString()+" "
+	 * +result.getObject(3).toString(); personCombo.addItem(item); } } catch
+	 * (SQLException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+	 * }
+	 */
+	
+	public void setRoomStatusComboValues() {
+		roomStatusCombo.removeAllItems();
+		conn = DBConnection.getConnection();
+		String sql = "select * from room_status";
+		
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			
+			while (result.next()) {
+				roomStatusCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
+			}
+		} catch (SQLException e) {
+			 // TODO Auto-generated catch block 
+			e.printStackTrace();
+		}
+	}
+	
+	public void setRoomTypeComboValues() {
+		roomTypeCombo.removeAllItems();
+		conn = DBConnection.getConnection();
+		String sql = "select id, name from room_type";
+		
+		try {
+			state = conn.prepareStatement(sql);
+			result = state.executeQuery();
+			
+			while (result.next()) {
+				roomTypeCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
+			}
+		} catch (SQLException e) {
+			 // TODO Auto-generated catch block 
+			e.printStackTrace();
+		}
+	}
+	
+	class AddRoomAction implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String sql="insert into rooms values(null, ?, ?, ?)";
+			
+			try {
+				state=conn.prepareStatement(sql);
+				state.setInt(1, Integer.parseInt(roomNubmerTF.getText()));
+				state.setInt(2, Integer.parseInt(((ComboItem) roomTypeCombo.getSelectedItem()).getValue()));
+				state.setInt(3, Integer.parseInt(((ComboItem) roomStatusCombo.getSelectedItem()).getValue()));
+				
+				state.execute();
+				//BuildRoomTypesHelper.clearRoomTypesForm(nameTF, priceTF);
+				refreshTable(table,"rooms");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+	}
+	
+	class DeleteRoomAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			conn = DBConnection.getConnection();
+			String sql="delete from rooms where id=?";
+			
+			try {
+				state = conn.prepareStatement(sql);
+				state.setInt(1, id);
+				state.execute();
+				
+				clearRoomsForm();
+				
+				refreshTable(table, "rooms");
+				id=-1;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
+	}
+	
+	class SearchRoomAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			conn=DBConnection.getConnection();
+			String sql="select * from rooms where room_number=?";
+			
+			try {
+				state=conn.prepareStatement(sql);
+				state.setString(1, roomNubmerTF.getText());
+				result=state.executeQuery();
+				
+				table.setModel(new MyModel(result));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class MouseAction implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			int row=table.getSelectedRow();
+			id=Integer.parseInt(table.getValueAt(row, 0).toString());
+			if(e.getClickCount()>1) {
+				nameTF.setText(table.getValueAt(row, 1).toString());
+				priceTF.setText(table.getValueAt(row, 2).toString());
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	class RefreshRoomAction implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			refreshTable(table, "rooms");
+		}
+		
+	}
+}
+
