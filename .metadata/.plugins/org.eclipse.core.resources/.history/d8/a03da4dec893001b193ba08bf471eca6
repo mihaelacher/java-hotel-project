@@ -211,8 +211,8 @@ public class ReservationsPanel extends JPanel{
 				state=conn.prepareStatement(sql);
 				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-				state.setDate(3, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfDepartureTF.getText()));
-				state.setDate(4, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfAccommodationTF.getText()));
+				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
 				state.execute();
 				clearReservationForm();

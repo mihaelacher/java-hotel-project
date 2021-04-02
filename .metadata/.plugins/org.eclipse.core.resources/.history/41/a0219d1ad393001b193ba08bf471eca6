@@ -1,6 +1,5 @@
 package Panels;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.sql.Connection;
@@ -16,12 +15,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import Core.ComboItem;
-import Panels.ReservationsPanel.AddReservationAction;
-import Panels.ReservationsPanel.DeleteReservationAction;
-import Panels.ReservationsPanel.EditReservationAction;
-import Panels.ReservationsPanel.MouseAction;
-import Panels.ReservationsPanel.RefreshReservationAction;
-import Panels.ReservationsPanel.SearchReservationAction;
 
 public class PaymentsPanel extends JPanel{
 
@@ -44,13 +37,13 @@ public class PaymentsPanel extends JPanel{
 	
 		JLabel guestLabel=new JLabel("Гост:");
 		JLabel reservationLabel=new JLabel("Резервация:");
-		
+		JLabel dateOfDepartureLabel=new JLabel("Дата на настаняване:");
 		
 		// Define payment fields
 		
 		JTextField guestTF=new JTextField();
 		JTextField reservationTF=new JTextField();
-		
+		JTextField dateOfDepartureTF=new JTextField();
 		
 		
 		JComboBox<ComboItem> guestCombo=new JComboBox<ComboItem>();
@@ -77,7 +70,8 @@ public class PaymentsPanel extends JPanel{
 					paymentsUpPanel.add(guestCombo);
 					paymentsUpPanel.add(reservationLabel);
 					paymentsUpPanel.add(reservationCombo);
-					
+					paymentsUpPanel.add(dateOfDepartureLabel);
+					paymentsUpPanel.add(dateOfDepartureTF);
 					
 					this.add(paymentsUpPanel);
 					//-----------------------------------------------------------
@@ -92,24 +86,8 @@ public class PaymentsPanel extends JPanel{
 					
 					this.add(paymentsMidPanel);
 	
-					myScroll.setPreferredSize(new Dimension(350, 150));
-					paymentsDounPanel.add(myScroll);
-					
-					this.add(paymentsDounPanel);
-					
-					//--------------------------------------------------------------
 	
-					paymentsAddBt.addActionListener(new AddPaymentAction());
-					paymentsDeleteBt.addActionListener(new DeletePaymentAction());
-					paymentsTable.addMouseListener(new MouseAction());
-					paymentsSearchBt.addActionListener(new SearchPaymentAction());
-					paymentsRefreshBt.addActionListener(new RefreshPaymentAction());
-					paymentsEditBt.addActionListener(new EditPaymentAction());
 	
-				
-				}
-					
-				
-					
+	
 }
 }

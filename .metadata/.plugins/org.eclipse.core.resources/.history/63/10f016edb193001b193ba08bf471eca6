@@ -82,9 +82,9 @@ public class ReservationsPanel extends JPanel{
 			reservationsUpPanel.setLayout(new GridLayout(6,2));
 			
 			reservationsUpPanel.add(guestsLabel);
-			reservationsUpPanel.add(guestsCombo);
+			reservationsUpPanel.add(guestsTF);
 			reservationsUpPanel.add(roomNumberLabel);
-			reservationsUpPanel.add(roomNumberCombo);
+			reservationsUpPanel.add(roomNumberTF);
 			reservationsUpPanel.add(dateOfDepartureLabel);
 			reservationsUpPanel.add(dateOfDepartureTF);
 			reservationsUpPanel.add(dateOfAccommodationLabel);
@@ -117,18 +117,14 @@ public class ReservationsPanel extends JPanel{
 			reservationsDeleteBt.addActionListener(new DeleteReservationAction());
 			reservationsTable.addMouseListener(new MouseAction());
 			reservationsSearchBt.addActionListener(new SearchReservationAction());
-			reservationsRefreshBt.addActionListener(new RefreshReservationAction());
-			reservationsEditBt.addActionListener(new EditReservationAction());
-	        
-			reservationsTable.addMouseListener(new MouseAction());
+			//reservationsRefreshBt.addActionListener(new RefreshReservationAction());
 			
+	
 		    refreshReservationsTable(reservationsTable, "reservations");
 			
 			this.setVisible(true);
 			
 			setGuestsComboValues();
-			setRoomNumberComboValues();
-			clearReservationForm();
 		}
 		
 		public void refreshReservationsTable(JTable reservationsTable, String tabDB) {
@@ -162,7 +158,7 @@ public class ReservationsPanel extends JPanel{
 			roomNumberCombo.addItem(new ComboItem("0", "Изберете номер на стая"));
 			
 			conn = DBConnection.getConnection();
-			String sql = "select id, room_number from rooms";
+			String sql = "select id, roomNubmer from rooms";
 			
 			try {
 				state = conn.prepareStatement(sql);
@@ -180,8 +176,6 @@ public class ReservationsPanel extends JPanel{
 
 		public void setGuestsComboValues() {
 			guestsCombo.removeAllItems();
-			guestsCombo.addItem(new ComboItem("0", "Изберете гост"));
-			
 			conn = DBConnection.getConnection();
 			String sql = "select id, first_name, last_name from guests";
 			
@@ -189,9 +183,11 @@ public class ReservationsPanel extends JPanel{
 				state = conn.prepareStatement(sql);
 				result = state.executeQuery();
 				
+				String Item="";
 				
 				while (result.next()) {
-					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
+					Item=result.getObject(2).toString()+" "+result.getObject(3).toString();
+					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), Item));
 				}
 			} catch (SQLException e) {
 				 // TODO Auto-generated catch block 
@@ -211,16 +207,13 @@ public class ReservationsPanel extends JPanel{
 				state=conn.prepareStatement(sql);
 				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-				state.setDate(3, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfDepartureTF.getText()));
-				state.setDate(4, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfAccommodationTF.getText()));
+				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
 				state.execute();
 				clearReservationForm();
 				refreshReservationsTable(reservationsTable, "reservations");
-				setRoomNumberComboValues();
-				setRoomNumberComboValues();
-              
-				
+               
 				
 				} catch (SQLException e1) {
 					e1.printStackTrace();
@@ -245,8 +238,6 @@ public class ReservationsPanel extends JPanel{
 							refreshReservationsTable(reservationsTable, "reservations");
 							clearReservationForm();
 							id=-1;
-							setRoomNumberComboValues();
-							setRoomNumberComboValues();
 							
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
@@ -330,7 +321,7 @@ public class ReservationsPanel extends JPanel{
 					
 					try {
 						state=conn.prepareStatement(sql);
-						state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
+						state.setString(1, guestsTF.getText());
 						result=state.executeQuery();
 						reservationsTable.setModel(new MyModel(result));
 						
@@ -342,49 +333,11 @@ public class ReservationsPanel extends JPanel{
 						e1.printStackTrace();
 					}
 					
-						}
-					
-					}
-				
-				class EditReservationAction implements ActionListener {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						conn = DBConnection.getConnection();
-						String sql="update reservations set guest_id = ?, room_id = ?, created_at, check_in_date, check_out_date, total_amount  where id = ?";
 						
-						try {
-							state = conn.prepareStatement(sql);
-							state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
-							state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-							state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
-							state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
-							state.setInt(5, id);
-							
-							state.execute();
-							clearReservationForm();
-							refreshReservationsTable(reservationsTable, "reservations");
-						} catch (SQLException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} 
-					
-				}
-				}
-				
-				
-				
-				class RefreshReservationAction implements ActionListener{
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-						refreshReservationsTable(reservationsTable, "reservations");
 						
 					}
+					
+					
 					
 				}
 			

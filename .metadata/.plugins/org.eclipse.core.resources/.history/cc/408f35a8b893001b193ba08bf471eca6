@@ -82,9 +82,9 @@ public class ReservationsPanel extends JPanel{
 			reservationsUpPanel.setLayout(new GridLayout(6,2));
 			
 			reservationsUpPanel.add(guestsLabel);
-			reservationsUpPanel.add(guestsCombo);
+			reservationsUpPanel.add(guestsTF);
 			reservationsUpPanel.add(roomNumberLabel);
-			reservationsUpPanel.add(roomNumberCombo);
+			reservationsUpPanel.add(roomNumberTF);
 			reservationsUpPanel.add(dateOfDepartureLabel);
 			reservationsUpPanel.add(dateOfDepartureTF);
 			reservationsUpPanel.add(dateOfAccommodationLabel);
@@ -127,8 +127,6 @@ public class ReservationsPanel extends JPanel{
 			this.setVisible(true);
 			
 			setGuestsComboValues();
-			setRoomNumberComboValues();
-			clearReservationForm();
 		}
 		
 		public void refreshReservationsTable(JTable reservationsTable, String tabDB) {
@@ -162,7 +160,7 @@ public class ReservationsPanel extends JPanel{
 			roomNumberCombo.addItem(new ComboItem("0", "Изберете номер на стая"));
 			
 			conn = DBConnection.getConnection();
-			String sql = "select id, room_number from rooms";
+			String sql = "select id, roomNubmer from rooms";
 			
 			try {
 				state = conn.prepareStatement(sql);
@@ -180,8 +178,6 @@ public class ReservationsPanel extends JPanel{
 
 		public void setGuestsComboValues() {
 			guestsCombo.removeAllItems();
-			guestsCombo.addItem(new ComboItem("0", "Изберете гост"));
-			
 			conn = DBConnection.getConnection();
 			String sql = "select id, first_name, last_name from guests";
 			
@@ -189,9 +185,11 @@ public class ReservationsPanel extends JPanel{
 				state = conn.prepareStatement(sql);
 				result = state.executeQuery();
 				
+				String Item="";
 				
 				while (result.next()) {
-					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
+					Item=result.getObject(2).toString()+" "+result.getObject(3).toString();
+					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), Item));
 				}
 			} catch (SQLException e) {
 				 // TODO Auto-generated catch block 
@@ -211,16 +209,13 @@ public class ReservationsPanel extends JPanel{
 				state=conn.prepareStatement(sql);
 				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-				state.setDate(3, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfDepartureTF.getText()));
-				state.setDate(4, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfAccommodationTF.getText()));
+				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
 				state.execute();
 				clearReservationForm();
 				refreshReservationsTable(reservationsTable, "reservations");
-				setRoomNumberComboValues();
-				setRoomNumberComboValues();
-              
-				
+               
 				
 				} catch (SQLException e1) {
 					e1.printStackTrace();
@@ -245,8 +240,6 @@ public class ReservationsPanel extends JPanel{
 							refreshReservationsTable(reservationsTable, "reservations");
 							clearReservationForm();
 							id=-1;
-							setRoomNumberComboValues();
-							setRoomNumberComboValues();
 							
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
@@ -330,7 +323,7 @@ public class ReservationsPanel extends JPanel{
 					
 					try {
 						state=conn.prepareStatement(sql);
-						state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
+						state.setString(1, guestsTF.getText());
 						result=state.executeQuery();
 						reservationsTable.setModel(new MyModel(result));
 						
@@ -342,9 +335,13 @@ public class ReservationsPanel extends JPanel{
 						e1.printStackTrace();
 					}
 					
-						}
-					
+						
+						
 					}
+					
+					
+					
+				}
 				
 				class EditReservationAction implements ActionListener {
 
@@ -370,11 +367,10 @@ public class ReservationsPanel extends JPanel{
 						} catch (ParseException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} 
 					
 				}
 				}
-				
+				}
 				
 				
 				class RefreshReservationAction implements ActionListener{

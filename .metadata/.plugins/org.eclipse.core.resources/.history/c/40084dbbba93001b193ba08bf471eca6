@@ -127,8 +127,6 @@ public class ReservationsPanel extends JPanel{
 			this.setVisible(true);
 			
 			setGuestsComboValues();
-			setRoomNumberComboValues();
-			clearReservationForm();
 		}
 		
 		public void refreshReservationsTable(JTable reservationsTable, String tabDB) {
@@ -211,16 +209,13 @@ public class ReservationsPanel extends JPanel{
 				state=conn.prepareStatement(sql);
 				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-				state.setDate(3, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfDepartureTF.getText()));
-				state.setDate(4, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfAccommodationTF.getText()));
+				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
 				state.execute();
 				clearReservationForm();
 				refreshReservationsTable(reservationsTable, "reservations");
-				setRoomNumberComboValues();
-				setRoomNumberComboValues();
-              
-				
+               
 				
 				} catch (SQLException e1) {
 					e1.printStackTrace();
@@ -245,8 +240,6 @@ public class ReservationsPanel extends JPanel{
 							refreshReservationsTable(reservationsTable, "reservations");
 							clearReservationForm();
 							id=-1;
-							setRoomNumberComboValues();
-							setRoomNumberComboValues();
 							
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
@@ -330,7 +323,7 @@ public class ReservationsPanel extends JPanel{
 					
 					try {
 						state=conn.prepareStatement(sql);
-						state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
+						state.setString(1, guestsTF.getText());
 						result=state.executeQuery();
 						reservationsTable.setModel(new MyModel(result));
 						
@@ -342,9 +335,13 @@ public class ReservationsPanel extends JPanel{
 						e1.printStackTrace();
 					}
 					
-						}
-					
+						
+						
 					}
+					
+					
+					
+				}
 				
 				class EditReservationAction implements ActionListener {
 
@@ -370,11 +367,10 @@ public class ReservationsPanel extends JPanel{
 						} catch (ParseException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} 
 					
 				}
 				}
-				
+				}
 				
 				
 				class RefreshReservationAction implements ActionListener{
