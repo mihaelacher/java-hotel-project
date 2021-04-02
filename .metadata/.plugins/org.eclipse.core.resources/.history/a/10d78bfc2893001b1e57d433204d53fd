@@ -116,7 +116,8 @@ public class ReservationsPanel extends JPanel{
 			reservationsAddBt.addActionListener(new AddReservationAction());
 			reservationsDeleteBt.addActionListener(new DeleteReservationAction());
 			reservationsTable.addMouseListener(new MouseAction());
-			reservationsSearchBt.addActionListener(new SearchReservationAction());
+			
+			//reservationsSearchBt.addActionListener(new SearchReservationAction());
 			//reservationsRefreshBt.addActionListener(new RefreshReservationAction());
 			
 	
@@ -154,23 +155,7 @@ public class ReservationsPanel extends JPanel{
 		}
 		
 		public void setRoomNumberComboValues() {
-			roomNumberCombo.removeAllItems();
-			roomNumberCombo.addItem(new ComboItem("0", "Изберете номер на стая"));
 			
-			conn = DBConnection.getConnection();
-			String sql = "select id, roomNubmer from rooms";
-			
-			try {
-				state = conn.prepareStatement(sql);
-				result = state.executeQuery();
-				
-				while (result.next()) {
-					roomNumberCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 		}
 
@@ -205,8 +190,8 @@ public class ReservationsPanel extends JPanel{
 				
 				try {
 				state=conn.prepareStatement(sql);
-				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
-				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
+				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getValue()));
+				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getValue()));
 				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
 				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
@@ -244,6 +229,12 @@ public class ReservationsPanel extends JPanel{
 							e.printStackTrace();
 						}
 						
+			
+						
+						setGuestsComboValues();
+						setRoomNumberComboValues();
+					    dateOfDepartureTF.setText("");
+					    dateOfAccommodationTF.setText("");
 						
 					}
 					
@@ -308,36 +299,6 @@ public class ReservationsPanel extends JPanel{
 						// TODO Auto-generated method stub
 						
 					}
-					
-				}
-				
-				class SearchReservationAction implements ActionListener{
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-					conn=DBConnection.getConnection();
-					String sql="select * from reservations where guest_id=?";
-					
-					try {
-						state=conn.prepareStatement(sql);
-						state.setString(1, guestsTF.getText());
-						result=state.executeQuery();
-						reservationsTable.setModel(new MyModel(result));
-						
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-						
-						
-					}
-					
-					
 					
 				}
 			

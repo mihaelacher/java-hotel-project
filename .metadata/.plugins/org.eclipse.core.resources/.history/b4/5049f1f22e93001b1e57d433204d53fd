@@ -317,18 +317,13 @@ public class ReservationsPanel extends JPanel{
 					public void actionPerformed(ActionEvent e) {
 						
 					conn=DBConnection.getConnection();
-					String sql="select * from reservations where guest_id=?";
+					String sql="select * from reservations where name=?";
 					
 					try {
 						state=conn.prepareStatement(sql);
-						state.setString(1, guestsTF.getText());
-						result=state.executeQuery();
-						reservationsTable.setModel(new MyModel(result));
+						state.setString(1, guestsTF);
 						
 					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}

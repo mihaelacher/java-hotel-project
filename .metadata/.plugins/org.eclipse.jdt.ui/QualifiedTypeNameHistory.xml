@@ -3,7 +3,6 @@
     <fullyQualifiedTypeName name="javax.swing.JButton"/>
     <fullyQualifiedTypeName name="javax.swing.JLabel"/>
     <fullyQualifiedTypeName name="javax.swing.JTextField"/>
-    <fullyQualifiedTypeName name="java.awt.event.ActionListener"/>
     <fullyQualifiedTypeName name="javax.swing.JFrame"/>
     <fullyQualifiedTypeName name="javax.swing.JTabbedPane"/>
     <fullyQualifiedTypeName name="java.sql.DriverManager"/>
@@ -14,7 +13,6 @@
     <fullyQualifiedTypeName name="javax.swing.JScrollPane"/>
     <fullyQualifiedTypeName name="javax.swing.event.ChangeListener"/>
     <fullyQualifiedTypeName name="Panels.GuestsPanel"/>
-    <fullyQualifiedTypeName name="Core.DBConnection"/>
     <fullyQualifiedTypeName name="Core.MyModel"/>
     <fullyQualifiedTypeName name="Panels.RoomsPanel"/>
     <fullyQualifiedTypeName name="java.awt.TextField"/>
@@ -31,4 +29,6 @@
     <fullyQualifiedTypeName name="Panels.ReservationsPanel"/>
     <fullyQualifiedTypeName name="Panels.PaymentsPanel"/>
     <fullyQualifiedTypeName name="Core.ComboItem"/>
+    <fullyQualifiedTypeName name="java.awt.event.ActionListener"/>
+    <fullyQualifiedTypeName name="Core.DBConnection"/>
 </qualifiedTypeNameHistroy>

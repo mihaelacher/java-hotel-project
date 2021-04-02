@@ -317,7 +317,7 @@ public class ReservationsPanel extends JPanel{
 					public void actionPerformed(ActionEvent e) {
 						
 					conn=DBConnection.getConnection();
-					String sql="select * from reservations where guest_id=?";
+					String sql="select * from reservations where name=?";
 					
 					try {
 						state=conn.prepareStatement(sql);

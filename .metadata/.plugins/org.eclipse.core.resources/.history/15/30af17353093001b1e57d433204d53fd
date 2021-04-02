@@ -39,12 +39,12 @@ public class RoomsPanel extends JPanel {
 	JPanel roomsDownPanel = new JPanel();
 
 	// Define room type labels
-	JLabel roomNumberLabel = new JLabel("Номер на стаята");
+	JLabel roomNubmerLabel = new JLabel("Номер на стаята");
 	JLabel roomTypeLabel = new JLabel("Тип на стаята");
 	JLabel roomStatusLabel = new JLabel("Статус на стаята");
 
 	// Define room fields
-	JTextField roomNumberTF = new JTextField();
+	JTextField roomNubmerTF = new JTextField();
 	JComboBox<ComboItem> roomStatusCombo = new JComboBox<ComboItem>();
 	JComboBox<ComboItem> roomTypeCombo = new JComboBox<ComboItem>();
 
@@ -67,8 +67,8 @@ public class RoomsPanel extends JPanel {
 		roomsUpPanel.setLayout(new GridLayout(6, 2));
 
 		// Add input fields and dropdown menus
-		roomsUpPanel.add(roomNumberLabel);
-		roomsUpPanel.add(roomNumberTF);
+		roomsUpPanel.add(roomNubmerLabel);
+		roomsUpPanel.add(roomNubmerTF);
 		roomsUpPanel.add(roomTypeLabel);
 		roomsUpPanel.add(roomTypeCombo);
 		roomsUpPanel.add(roomStatusLabel);
@@ -118,7 +118,7 @@ public class RoomsPanel extends JPanel {
 			try {
 				state = conn.prepareStatement(sql);
 				// Set important query data
-				state.setInt(1, Integer.parseInt(roomNumberTF.getText()));
+				state.setInt(1, Integer.parseInt(roomNubmerTF.getText()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomStatusCombo.getSelectedItem()).getId()));
 				state.setInt(3, Integer.parseInt(((ComboItem) roomTypeCombo.getSelectedItem()).getId()));
 				state.setInt(4, id);
@@ -157,7 +157,7 @@ public class RoomsPanel extends JPanel {
 	}
 
 	public void clearRoomsForm() {
-		roomNumberTF.setText("");
+		roomNubmerTF.setText("");
 		setRoomTypeComboValues();
 		setRoomStatusComboValues();
 	}
@@ -215,7 +215,7 @@ public class RoomsPanel extends JPanel {
 			try {
 				state = conn.prepareStatement(sql);
 				
-				state.setInt(1, Integer.parseInt(roomNumberTF.getText()));
+				state.setInt(1, Integer.parseInt(roomNubmerTF.getText()));
 				state.setInt(2, Integer.parseInt(((ComboItem) roomTypeCombo.getSelectedItem()).getId()));
 				state.setInt(3, Integer.parseInt(((ComboItem) roomStatusCombo.getSelectedItem()).getId()));
 
@@ -264,7 +264,7 @@ public class RoomsPanel extends JPanel {
 
 			try {
 				state = conn.prepareStatement(sql);
-				state.setString(1, roomNumberTF.getText());
+				state.setString(1, roomNubmerTF.getText());
 				result = state.executeQuery();
 
 				table.setModel(new MyModel(result));
@@ -282,7 +282,7 @@ public class RoomsPanel extends JPanel {
 			int row = table.getSelectedRow();
 			id = Integer.parseInt(table.getValueAt(row, 0).toString());
 			if (e.getClickCount() > 1) {
-				roomNumberTF.setText(table.getValueAt(row, 1).toString());
+				roomNubmerTF.setText(table.getValueAt(row, 1).toString());
 				
 				String roomType = table.getValueAt(row, 2).toString();
 				String roomStatus = table.getValueAt(row, 3).toString();

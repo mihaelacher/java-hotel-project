@@ -116,7 +116,8 @@ public class ReservationsPanel extends JPanel{
 			reservationsAddBt.addActionListener(new AddReservationAction());
 			reservationsDeleteBt.addActionListener(new DeleteReservationAction());
 			reservationsTable.addMouseListener(new MouseAction());
-			reservationsSearchBt.addActionListener(new SearchReservationAction());
+			
+			//reservationsSearchBt.addActionListener(new SearchReservationAction());
 			//reservationsRefreshBt.addActionListener(new RefreshReservationAction());
 			
 	
@@ -308,36 +309,6 @@ public class ReservationsPanel extends JPanel{
 						// TODO Auto-generated method stub
 						
 					}
-					
-				}
-				
-				class SearchReservationAction implements ActionListener{
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-					conn=DBConnection.getConnection();
-					String sql="select * from reservations where guest_id=?";
-					
-					try {
-						state=conn.prepareStatement(sql);
-						state.setString(1, guestsTF.getText());
-						result=state.executeQuery();
-						reservationsTable.setModel(new MyModel(result));
-						
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-						
-						
-					}
-					
-					
 					
 				}
 			

@@ -71,8 +71,8 @@ public class ReservationsPanel extends JPanel{
 		JButton reservationsSearchBt=new JButton("Търсене по име");
 		JButton reservationsRefreshBt=new JButton("Обнови");
 		
-		JTable reservationsTable = new JTable();
-		JScrollPane myScroll = new JScrollPane(reservationsTable);
+		JTable reservationTable = new JTable();
+		JScrollPane myScroll = new JScrollPane(reservationTable);
 	
 		public ReservationsPanel() {
 			
@@ -115,25 +115,26 @@ public class ReservationsPanel extends JPanel{
 			
 			reservationsAddBt.addActionListener(new AddReservationAction());
 			reservationsDeleteBt.addActionListener(new DeleteReservationAction());
-			reservationsTable.addMouseListener(new MouseAction());
-			reservationsSearchBt.addActionListener(new SearchReservationAction());
+			reservationTable.addMouseListener(new MouseAction());
+			
+			//reservationsSearchBt.addActionListener(new SearchReservationAction());
 			//reservationsRefreshBt.addActionListener(new RefreshReservationAction());
 			
 	
-		    refreshReservationsTable(reservationsTable, "reservations");
+		    refreshReservationTable(reservationTable, "reservation");
 			
 			this.setVisible(true);
 			
 			setGuestsComboValues();
 		}
 		
-		public void refreshReservationsTable(JTable reservationsTable, String tabDB) {
+		public void refreshReservationTable(JTable reservationTable, String tabDB) {
 			conn=DBConnection.getConnection();
 			
 			try {
 				state=conn.prepareStatement("select * from " + tabDB);
 				result=state.executeQuery();
-				reservationsTable.setModel(new MyModel(result));
+				reservationTable.setModel(new MyModel(result));
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -154,23 +155,7 @@ public class ReservationsPanel extends JPanel{
 		}
 		
 		public void setRoomNumberComboValues() {
-			roomNumberCombo.removeAllItems();
-			roomNumberCombo.addItem(new ComboItem("0", "Изберете номер на стая"));
 			
-			conn = DBConnection.getConnection();
-			String sql = "select id, roomNubmer from rooms";
-			
-			try {
-				state = conn.prepareStatement(sql);
-				result = state.executeQuery();
-				
-				while (result.next()) {
-					roomNumberCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 		}
 
@@ -200,19 +185,19 @@ public class ReservationsPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				conn = DBConnection.getConnection();
-				String sql="insert into reservations values(null, ?,?,?,?,?,?)";
+				String sql="insert into reservations values(null, ?,?,?,?,?)";
 				
 				
 				try {
 				state=conn.prepareStatement(sql);
-				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
-				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
+				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getValue()));
+				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getValue()));
 				state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
 				state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 				
 				state.execute();
 				clearReservationForm();
-				refreshReservationsTable(reservationsTable, "reservations");
+				refreshReservationTable(reservationTable, "reservation");
                
 				
 				} catch (SQLException e1) {
@@ -229,21 +214,12 @@ public class ReservationsPanel extends JPanel{
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						conn = DBConnection.getConnection();
-						String sql="delete from reservations where id=?";
+						String sql="delete from reservation where id=?";
 						
-						try {
-							state=conn.prepareStatement(sql);
-							state.setInt(1, id);
-							state.execute();
-							refreshReservationsTable(reservationsTable, "reservations");
-							clearReservationForm();
-							id=-1;
-							
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
+						setGuestsComboValues();
+						setRoomNumberComboValues();
+					    dateOfDepartureTF.setText("");
+					    dateOfAccommodationTF.setText("");
 						
 					}
 					
@@ -254,14 +230,14 @@ public class ReservationsPanel extends JPanel{
 
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						int row=reservationsTable.getSelectedRow();
-						id=Integer.parseInt(reservationsTable.getValueAt(row, 0).toString());
+						int row=reservationTable.getSelectedRow();
+						id=Integer.parseInt(reservationTable.getValueAt(row, 0).toString());
 						if(e.getClickCount()>1) {
-							dateOfDepartureTF.setText(reservationsTable.getValueAt(row, 3).toString());
-							dateOfAccommodationTF.setText(reservationsTable.getValueAt(row, 4).toString());
+							dateOfDepartureTF.setText(reservationTable.getValueAt(row, 3).toString());
+							dateOfAccommodationTF.setText(reservationTable.getValueAt(row, 4).toString());
 							
-							String guests = reservationsTable.getValueAt(row, 1).toString();
-							String roomNumber = reservationsTable.getValueAt(row, 2).toString();
+							String guests = reservationTable.getValueAt(row, 1).toString();
+							String roomNumber = reservationTable.getValueAt(row, 2).toString();
 							
 							int guestsCount = guestsCombo.getItemCount();
 							
@@ -308,36 +284,6 @@ public class ReservationsPanel extends JPanel{
 						// TODO Auto-generated method stub
 						
 					}
-					
-				}
-				
-				class SearchReservationAction implements ActionListener{
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-					conn=DBConnection.getConnection();
-					String sql="select * from reservations where guest_id=?";
-					
-					try {
-						state=conn.prepareStatement(sql);
-						state.setString(1, guestsTF.getText());
-						result=state.executeQuery();
-						reservationsTable.setModel(new MyModel(result));
-						
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-						
-						
-					}
-					
-					
 					
 				}
 			

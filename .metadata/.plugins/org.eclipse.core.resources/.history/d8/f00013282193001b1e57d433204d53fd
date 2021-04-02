@@ -12,7 +12,7 @@ public class DBConnection {
 		
 		try {
 			Class.forName("org.h2.Driver");
-			conn=DriverManager.getConnection("jdbc:h2:tcp://localhost/C:\\Users\\ASUS\\Desktop\\java\\ProjectOOP", "sa3", "123123");
+			conn=DriverManager.getConnection("jdbc:h2:tcp://localhost/C:\\Users\\mihae\\OneDrive\\Desktop\\HotelDB\\HotelDB", "sa", "12345");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -22,9 +22,4 @@ public class ComboItem {
     public String toString() {
         return label;
     }
-
-	public String getValue() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
