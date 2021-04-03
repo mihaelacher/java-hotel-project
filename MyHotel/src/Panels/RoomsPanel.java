@@ -169,7 +169,7 @@ public class RoomsPanel extends JPanel {
 		roomStatusCombo.addItem(new ComboItem("0", "Изберете статус"));
 		
 		conn = DBConnection.getConnection();
-		String sql = "insert into room_status (status) values(свободна)";
+		String sql = "select id, status from room_status";
 
 		try {
 			state = conn.prepareStatement(sql);

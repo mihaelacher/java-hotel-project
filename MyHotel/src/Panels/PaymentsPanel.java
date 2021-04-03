@@ -98,7 +98,7 @@ public class PaymentsPanel extends JPanel{
 					this.add(paymentsDounPanel);
 					
 					//--------------------------------------------------------------
-	
+	/*
 					paymentsAddBt.addActionListener(new AddPaymentAction());
 					paymentsDeleteBt.addActionListener(new DeletePaymentAction());
 					paymentsTable.addMouseListener(new MouseAction());
@@ -106,10 +106,9 @@ public class PaymentsPanel extends JPanel{
 					paymentsRefreshBt.addActionListener(new RefreshPaymentAction());
 					paymentsEditBt.addActionListener(new EditPaymentAction());
 	
-				
+				*/
 				}
 					
 				
 					
-}
 }

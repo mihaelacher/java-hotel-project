@@ -8,17 +8,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Calendar;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -56,7 +60,11 @@ public class ReservationsPanel extends JPanel{
 	// Define reservation fields
 	JTextField guestsTF=new JTextField();
 	JTextField roomNumberTF=new JTextField();
+	//DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+    //JFormattedTextField dateOfDepartureTF = new JFormattedTextField(format);
+	
 	JTextField dateOfDepartureTF=new JTextField();
+    //JFormattedTextField dateOfAccommodationTF = new JFormattedTextField(format);
 	JTextField dateOfAccommodationTF=new JTextField();
 	
 	JComboBox<ComboItem> guestsCombo=new JComboBox<ComboItem>();
@@ -199,6 +207,12 @@ public class ReservationsPanel extends JPanel{
 			}
 		}
 		
+		public static java.sql.Date toMysqlDateStr(String date) throws ParseException {
+			Date Date = new SimpleDateFormat("dd.MM.yyyy").parse(date);
+			String dateToString = new SimpleDateFormat("yyyy-MM-dd").format(Date);
+			return java.sql.Date.valueOf(dateToString);
+		}
+		
 		class AddReservationAction implements ActionListener{
 
 			@Override
@@ -206,21 +220,39 @@ public class ReservationsPanel extends JPanel{
 				conn = DBConnection.getConnection();
 				String sql="insert into reservations values(null, ?,?,?,?,?,?)";
 				
-				
 				try {
 				state=conn.prepareStatement(sql);
-				state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
+				int roomId = Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId());
+				state.setInt(1, roomId);
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-				state.setDate(3, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfDepartureTF.getText()));
-				state.setDate(4, (Date) new SimpleDateFormat("[-]yyyy-MM-dd").parse(dateOfAccommodationTF.getText()));
+				state.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
 				
+				java.sql.Date dateOfAccomodation = toMysqlDateStr(dateOfAccommodationTF.getText());
+				java.sql.Date dateOfDeparture = toMysqlDateStr(dateOfDepartureTF.getText());
+				
+				state.setDate(4, dateOfDeparture);
+				state.setDate(5, dateOfAccomodation);
+				
+				int diffInDays = (int)( (dateOfAccomodation.getTime() - dateOfDeparture.getTime()) 
+		                 / (1000 * 60 * 60 * 24) );
+				
+				
+				PreparedStatement roomsState = conn.prepareStatement("select price_per_day from room_types join rooms on room_types.id = rooms.room_type_id where rooms.id = ?");
+				roomsState.setInt(1, roomId);
+				ResultSet roomsResult = roomsState.executeQuery();
+				String roomsPricePerDay = null;
+				 while (roomsResult.next()) {
+					 roomsPricePerDay = roomsResult.getString(1);
+			         }
+				 
+				double totalPrice = Double.parseDouble(roomsPricePerDay) * diffInDays;
+				
+				state.setDouble(6, totalPrice);
 				state.execute();
 				clearReservationForm();
 				refreshReservationsTable(reservationsTable, "reservations");
 				setRoomNumberComboValues();
 				setRoomNumberComboValues();
-              
-				
 				
 				} catch (SQLException e1) {
 					e1.printStackTrace();
@@ -357,8 +389,8 @@ public class ReservationsPanel extends JPanel{
 							state = conn.prepareStatement(sql);
 							state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
 							state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-							state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
-							state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
+						//	state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+						//	state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
 							state.setInt(5, id);
 							
 							state.execute();
