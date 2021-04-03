@@ -13,11 +13,16 @@ import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -222,14 +227,27 @@ public class ReservationsPanel extends JPanel{
 				state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
 				state.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
 				
-				// First parse string date from text field to appropriate format for sql DB
 				java.sql.Date dateOfAccomodation = toMysqlDateStr(dateOfAccommodationTF.getText());
 				java.sql.Date dateOfDeparture = toMysqlDateStr(dateOfDepartureTF.getText());
 				
 				state.setDate(4, dateOfDeparture);
 				state.setDate(5, dateOfAccomodation);
 				
-				state.setDouble(6, getReservationTotalPrice(dateOfDeparture, dateOfAccomodation, roomId));
+				int diffInDays = (int)( (dateOfAccomodation.getTime() - dateOfDeparture.getTime()) 
+		                 / (1000 * 60 * 60 * 24) );
+				
+				
+				PreparedStatement roomsState = conn.prepareStatement("select price_per_day from room_types join rooms on room_types.id = rooms.room_type_id where rooms.id = ?");
+				roomsState.setInt(1, roomId);
+				ResultSet roomsResult = roomsState.executeQuery();
+				String roomsPricePerDay = null;
+				 while (roomsResult.next()) {
+					 roomsPricePerDay = roomsResult.getString(1);
+			         }
+				 
+				double totalPrice = Double.parseDouble(roomsPricePerDay) * diffInDays;
+				
+				state.setDouble(6, totalPrice);
 				state.execute();
 				clearReservationForm();
 				refreshReservationsTable(reservationsTable, "reservations");
@@ -243,25 +261,6 @@ public class ReservationsPanel extends JPanel{
 					e1.printStackTrace();
 				}
 			}
-		}
-		
-		public double getReservationTotalPrice(java.sql.Date dateOfDeparture, java.sql.Date dateOfAccomodation, int roomId) throws SQLException
-		{
-			// Find out for how many days is the reservation to calculate total price
-			int diffInDays = (int)( (dateOfAccomodation.getTime() - dateOfDeparture.getTime()) 
-	                 / (1000 * 60 * 60 * 24) );
-			
-			// Use DB to retrieve day price for the selected room
-			PreparedStatement roomsState = conn.prepareStatement("select price_per_day from room_types join rooms on room_types.id = rooms.room_type_id where rooms.id = ?");
-			roomsState.setInt(1, roomId);
-			ResultSet roomsResult = roomsState.executeQuery();
-			String roomsPricePerDay = null;
-			 while (roomsResult.next()) {
-				 roomsPricePerDay = roomsResult.getString(1);
-		         }
-			
-			 // Calculate total price
-			return Double.parseDouble(roomsPricePerDay) * diffInDays;
 		}
 				
 				class DeleteReservationAction implements ActionListener{
@@ -384,29 +383,19 @@ public class ReservationsPanel extends JPanel{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						conn = DBConnection.getConnection();
-						String sql="update reservations set guest_id = ?, room_id = ?, created_at = ?, check_in_date = ?, check_out_date = ?, total_amount = ?  where id = ?";
+						String sql="update reservations set guest_id = ?, room_id = ?, created_at, check_in_date, check_out_date, total_amount  where id = ?";
 						
 						try {
-							int roomId = Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId());
-							state.setInt(1, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
-							state.setInt(2, roomId);
-							state.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+							state = conn.prepareStatement(sql);
+							state.setInt(1, Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId()));
+							state.setInt(2, Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId()));
+						//	state.setDate(3, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfDepartureTF.getText()));
+						//	state.setDate(4, (Date) new SimpleDateFormat("dd.MM.yyyy").parse(dateOfAccommodationTF.getText()));
+							state.setInt(5, id);
 							
-							// First parse string date from text field to appropriate format for sql DB
-							java.sql.Date dateOfAccomodation = toMysqlDateStr(dateOfAccommodationTF.getText());
-							java.sql.Date dateOfDeparture = toMysqlDateStr(dateOfDepartureTF.getText());
-							
-							state.setDate(4, dateOfDeparture);
-							state.setDate(5, dateOfAccomodation);
-							
-							state.setDouble(6, getReservationTotalPrice(dateOfDeparture, dateOfAccomodation, roomId));
-							state.setInt(7, id);
 							state.execute();
-							
 							clearReservationForm();
 							refreshReservationsTable(reservationsTable, "reservations");
-							setRoomNumberComboValues();
-							setRoomNumberComboValues();
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
