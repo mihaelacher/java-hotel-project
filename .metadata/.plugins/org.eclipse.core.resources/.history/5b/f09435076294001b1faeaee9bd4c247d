@@ -93,43 +93,16 @@ public class PaymentsPanel extends JPanel {
 
 		this.add(paymentsDounPanel);
 
+		// --------------------------------------------------------------
+		/*
+		 * 
+		 * paymentsSearchBt.addActionListener(new SearchPaymentAction());
+		 * 
+		 */
 		paymentsTable.addMouseListener(new MouseAction());
 		paymentsRefreshBt.addActionListener(new RefreshPaymentAction());
 		isPaidButton.addActionListener(new UpdatePayment());
 		isNotPaidButton.addActionListener(new UpdatePayment());
-		paymentsSearchBt.addActionListener(new SearchPaymentAction());
-		
-		clearPaymentsForm();
-		refreshTable(paymentsTable);
-	}
-	
-	class SearchPaymentAction implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			conn = DBConnection.getConnection();
-			String sql = "select payments.id, payments.is_paid, guests.first_name, guests.last_name, reservations.total_amount from payments join reservations on payments.reservation_id = reservations.id join guests on guests.id = reservations.guest_id where guests.first_name = ?";
-
-			try {
-				String[] input = guestTF.getText().split("\\s+");
-				boolean twoNames = input.length > 1;
-				if (twoNames) {
-					sql += " and guests.last_name = ?";
-				}
-				state = conn.prepareStatement(sql);
-				state.setString(1, input[0]);
-				if (twoNames) {
-					state.setString(2, input[1]);
-				}
-				result = state.executeQuery();
-
-				paymentsTable.setModel(new MyModel(result));
-			} catch (Exception ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
-			}
-		}
-		
 	}
 	
 	public void clearPaymentsForm()
@@ -172,13 +145,13 @@ public class PaymentsPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			refreshTable(paymentsTable);
+			refreshTable(paymentsTable, "payments");
 			clearPaymentsForm();
 		}
 
 	}
 	
-	public void refreshTable(JTable table) {
+	public void refreshTable(JTable table, String tabDB) {
 		conn = DBConnection.getConnection();
 
 		try {

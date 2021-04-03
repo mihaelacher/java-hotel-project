@@ -194,7 +194,7 @@ public class ReservationsPanel extends JPanel{
 				
 				
 				while (result.next()) {
-					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString() + " " + result.getObject(3).toString()));
+					guestsCombo.addItem(new ComboItem(result.getObject(1).toString(), result.getObject(2).toString()));
 				}
 			} catch (SQLException e) {
 				 // TODO Auto-generated catch block 
@@ -215,11 +215,10 @@ public class ReservationsPanel extends JPanel{
 				conn = DBConnection.getConnection();
 				String sql="insert into reservations values(null, ?,?,?,?,?,?)";
 				int guestId = Integer.parseInt(((ComboItem) roomNumberCombo.getSelectedItem()).getId());
-				String generatedColumns[] = { "id" };
 				long reservationId = -1;
 				
 				try {
-				state=conn.prepareStatement(sql, generatedColumns);
+				state=conn.prepareStatement(sql);
 				int roomId = Integer.parseInt(((ComboItem) guestsCombo.getSelectedItem()).getId());
 				state.setInt(1, roomId);
 				state.setInt(2, guestId);
@@ -235,15 +234,12 @@ public class ReservationsPanel extends JPanel{
 				state.setDouble(6, getReservationTotalPrice(dateOfDeparture, dateOfAccomodation, roomId));
 				state.execute();
 				
-				try (ResultSet generatedKeys = state.getGeneratedKeys()) {
-		            if (generatedKeys.next()) {
-		            	reservationId = generatedKeys.getLong(1);
-		            }
-		            else {
-		                throw new SQLException("Creating user failed, no ID obtained.");
-		            }
-		        }
-				
+				ResultSet generatedKeys = state.getGeneratedKeys();
+				/*
+				 * try (ResultSet generatedKeys = state.getGeneratedKeys()) { if
+				 * (generatedKeys.next()) { reservationId = generatedKeys.getLong(1); } else {
+				 * throw new SQLException("Creating user failed, no ID obtained."); } }
+				 */
 				insertPaymentInDB(guestId, reservationId);
 				
 				clearReservationForm();

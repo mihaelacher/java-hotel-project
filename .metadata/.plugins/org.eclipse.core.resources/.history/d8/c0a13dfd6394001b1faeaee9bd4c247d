@@ -114,7 +114,7 @@ public class PaymentsPanel extends JPanel {
 				String[] input = guestTF.getText().split("\\s+");
 				boolean twoNames = input.length > 1;
 				if (twoNames) {
-					sql += " and guests.last_name = ?";
+					sql += " or where guests.last_name = ?";
 				}
 				state = conn.prepareStatement(sql);
 				state.setString(1, input[0]);

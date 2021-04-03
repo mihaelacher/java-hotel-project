@@ -116,7 +116,6 @@ public class RoomsPanel extends JPanel {
 			String sql = "update rooms set room_number = ?, room_status_id = ?, room_type_id = ? where id = ?";
 
 			try {
-				conn = DBConnection.getConnection();
 				state = conn.prepareStatement(sql);
 				// Set important query data
 				state.setInt(1, Integer.parseInt(roomNumberTF.getText()));
