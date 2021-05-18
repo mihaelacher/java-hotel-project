@@ -14,7 +14,9 @@ import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -88,7 +90,7 @@ public class RoomsPanel extends JPanel {
 		this.add(roomsMidPanel);
 
 		// Define table
-		myScroll.setPreferredSize(new Dimension(350, 100));
+		myScroll.setPreferredSize(new Dimension(550, 350));
 		roomsDownPanel.add(myScroll);
 		this.add(roomsDownPanel);
 
@@ -106,6 +108,14 @@ public class RoomsPanel extends JPanel {
 		refreshTable(table, "rooms");
 		// Clear inputs
 		clearRoomsForm();
+	}
+	
+
+	public void refreshData()
+	{
+		refreshTable(table, "rooms");
+		setRoomTypeComboValues();
+		setRoomStatusComboValues();
 	}
 
 	class EditRoomAction implements ActionListener {
@@ -243,6 +253,17 @@ public class RoomsPanel extends JPanel {
 			String sql = "delete from rooms where id=?";
 
 			try {
+				
+				String check = "select * from reservations join rooms on rooms.id = reservations.room_id where rooms.id = ?";
+				PreparedStatement checkState = conn.prepareStatement(check);
+				checkState.setInt(1, id);
+				ResultSet checkResult = checkState.executeQuery();
+				
+				if (checkResult.first()) {
+					JOptionPane.showMessageDialog(new JFrame(), "Невъзможно изтриване! Има резервации за тази стая!");
+					return;
+				}
+				
 				state = conn.prepareStatement(sql);
 				state.setInt(1, id);
 				state.execute();

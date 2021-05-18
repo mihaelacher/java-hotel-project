@@ -13,7 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -81,7 +83,7 @@ public class RoomTypesPanel extends JPanel {
 		this.add(roomTypesMidPanel);
 
 		// Create table in order to display DB data
-		myScroll.setPreferredSize(new Dimension(350, 100));
+		myScroll.setPreferredSize(new Dimension(550, 350));
 		roomTypesDownPanel.add(myScroll);
 		this.add(roomTypesDownPanel);
 		// Attach event listeners
@@ -97,6 +99,11 @@ public class RoomTypesPanel extends JPanel {
 		refreshTable(table, "room_types");
 		// Clear input fields
 		clearRoomTypesForm();
+	}
+	
+	public void refreshData()
+	{
+		refreshTable(table, "room_types");
 	}
 
 	class EditRoomTypeAction implements ActionListener {
@@ -182,6 +189,16 @@ public class RoomTypesPanel extends JPanel {
 			String sql = "delete from room_types where id=?";
 
 			try {
+				String check = "select * from room_types join rooms on rooms.room_type_id = room_types.id where room_types.id = ?";
+				PreparedStatement checkState = conn.prepareStatement(check);
+				checkState.setInt(1, id);
+				ResultSet checkResult = checkState.executeQuery();
+				
+				if (checkResult.first()) {
+					JOptionPane.showMessageDialog(new JFrame(), "Невъзможно изтриване! Има данни за този тип стая!");
+					return;
+				}
+				
 				state = conn.prepareStatement(sql);
 				state.setInt(1, id);
 				state.execute();

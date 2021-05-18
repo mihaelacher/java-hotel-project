@@ -14,7 +14,9 @@ import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -52,7 +54,6 @@ public class GuestsPanel extends JPanel {
 	JButton editBt = new JButton("Промяна");
 	JButton searchBt = new JButton("Търсене по име");
 	JButton refreshBt = new JButton("Обнови");
-	JComboBox<String> personCombo = new JComboBox<String>();
 	// --------------------------------------------------------------
 
 	JTable table = new JTable();
@@ -81,11 +82,10 @@ public class GuestsPanel extends JPanel {
 		midPanel.add(editBt);
 		midPanel.add(searchBt);
 		midPanel.add(refreshBt);
-		midPanel.add(personCombo);
 
 		this.add(midPanel);
 		// ------------------------------------------------------------
-		myScroll.setPreferredSize(new Dimension(350, 150));
+		myScroll.setPreferredSize(new Dimension(550, 350));
 		dounPanel.add(myScroll);
 
 		this.add(dounPanel);
@@ -101,9 +101,13 @@ public class GuestsPanel extends JPanel {
 		table.addMouseListener(new MouseAction());
 
 		refreshTable(table, tableName);
-		refreshCombo();
 
 		this.setVisible(true);
+	}
+	
+	public void refreshData()
+	{
+		refreshTable(table, tableName);
 	}
 
 	class EditAction implements ActionListener {
@@ -113,9 +117,15 @@ public class GuestsPanel extends JPanel {
 			conn = DBConnection.getConnection();
 			String sql = "update guests set first_name = ?, last_name = ?, email = ?, phone = ? where id = ?";
 			try {
+				String firstName = fTF.getText();
+				String lastName = fTF.getText();
+				if (firstName.isEmpty() || lastName.isEmpty()) {
+					JOptionPane.showMessageDialog(new JFrame(), "Невалидни данни!");
+					return;
+				}
 				state = conn.prepareStatement(sql);
-				state.setString(1, fTF.getText());
-				state.setString(2, lTF.getText());
+				state.setString(1, firstName);
+				state.setString(2, lastName);
 				state.setString(3, mailTF.getText());
 				state.setString(4, phoneTF.getText());
 				state.setInt(5, id);
@@ -123,7 +133,6 @@ public class GuestsPanel extends JPanel {
 				state.execute();
 				clearForm();
 				refreshTable(table, tableName);
-				refreshCombo();
 
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -132,28 +141,7 @@ public class GuestsPanel extends JPanel {
 		}
 
 	}
-
-	public void refreshCombo() {
-
-		personCombo.removeAllItems();
-		conn = DBConnection.getConnection();
-		String sql = "select id, first_name, last_name from " + tableName;
-		String item = "";
-
-		try {
-			state = conn.prepareStatement(sql);
-			result = state.executeQuery();
-			while (result.next()) {
-				item = result.getObject(1).toString() + "." + result.getObject(2).toString() + " "
-						+ result.getObject(3).toString();
-				personCombo.addItem(item);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
+	
 	public void refreshTable(JTable table, String tabDB) {
 		conn = DBConnection.getConnection();
 
@@ -185,16 +173,21 @@ public class GuestsPanel extends JPanel {
 			conn = DBConnection.getConnection();
 			String sql = "insert into " + tableName + " values(null, ?,?,?,?)";
 			try {
+				String firstName = fTF.getText();
+				String lastName = fTF.getText();
+				if (firstName.isEmpty() || lastName.isEmpty()) {
+					JOptionPane.showMessageDialog(new JFrame(), "Невалидни данни!");
+					return;
+				}
 				state = conn.prepareStatement(sql);
-				state.setString(1, fTF.getText());
-				state.setString(2, lTF.getText());
+				state.setString(1, firstName);
+				state.setString(2, lastName);
 				state.setString(3, mailTF.getText());
 				state.setString(4, phoneTF.getText());
 
 				state.execute();
 				clearForm();
 				refreshTable(table, tableName);
-				refreshCombo();
 
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -219,7 +212,6 @@ public class GuestsPanel extends JPanel {
 				refreshTable(table, tableName);
 				clearForm();
 				id = -1;
-				refreshCombo();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

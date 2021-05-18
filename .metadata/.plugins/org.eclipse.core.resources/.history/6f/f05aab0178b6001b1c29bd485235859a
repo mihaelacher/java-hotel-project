@@ -1,0 +1,55 @@
+package Panels;
+
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+
+public class ReferencePanel extends JPanel {
+
+	Connection conn = null;
+	PreparedStatement state = null;
+	ResultSet result;
+	int id = -1;
+	
+	JPanel referencesUpPanel = new JPanel();
+	JPanel referencesMidPanel = new JPanel();
+	JPanel referencesDownPanel = new JPanel();
+	
+	JLabel guestLabel = new JLabel("Гост:");
+	JTextField guestTF = new JTextField();
+	
+	JLabel roomNumberLabel = new JLabel("Номер на стая:");
+	JTextField roomNumberTF = new JTextField();
+	
+	JButton searchBt = new JButton("Резултати");
+	
+	JTable table = new JTable();
+	JScrollPane myScroll = new JScrollPane(table);
+	
+	public ReferencePanel() {
+		this.setLayout(new GridLayout(3, 1));
+		referencesUpPanel.setLayout(new GridLayout(6, 2));
+		referencesUpPanel.add(guestLabel);
+		referencesUpPanel.add(guestTF);
+		referencesUpPanel.add(roomNumberLabel);
+		referencesUpPanel.add(roomNumberTF);
+		this.add(referencesUpPanel);
+		
+		referencesMidPanel.add(searchBt);
+		this.add(referencesMidPanel);
+		
+		myScroll.setPreferredSize(new Dimension(550, 350));
+		referencesDownPanel.add(myScroll);
+		this.add(referencesDownPanel);
+		
+	}
+}

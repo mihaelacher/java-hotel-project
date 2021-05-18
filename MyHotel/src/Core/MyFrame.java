@@ -8,6 +8,7 @@ import javax.swing.event.ChangeListener;
 
 import Panels.GuestsPanel;
 import Panels.PaymentsPanel;
+import Panels.ReferencePanel;
 import Panels.ReservationsPanel;
 import Panels.RoomTypesPanel;
 import Panels.RoomsPanel;
@@ -19,11 +20,12 @@ public class MyFrame extends JFrame{
 	RoomsPanel roomsPanel=new RoomsPanel();
 	ReservationsPanel reservationsPanel=new ReservationsPanel();
 	PaymentsPanel paymentPanel=new PaymentsPanel();
+	ReferencePanel referencePanel = new ReferencePanel();
 	
 	JTabbedPane tab=new JTabbedPane();
 	
 	public MyFrame(){
-		this.setSize(400, 600);
+		this.setSize(600, 800);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		
@@ -32,6 +34,7 @@ public class MyFrame extends JFrame{
 		tab.add("Стаи",roomsPanel);
 		tab.add("Резервации",reservationsPanel);
 		tab.add("Плащания",paymentPanel);
+		tab.add("Справка", referencePanel);
 		
 		tab.addChangeListener(new ChangeListener() {
 
@@ -40,19 +43,26 @@ public class MyFrame extends JFrame{
 				switch (tab.getSelectedIndex()) {
 				case 0:
 					guestsPanel.setVisible(true);
+					guestsPanel.refreshData();
 					break;
 				case 1:
 					roomTypesPanel.setVisible(true);
+					roomTypesPanel.refreshData();
 					break;
 				case 2:
 					roomsPanel.setVisible(true);
+					roomsPanel.refreshData();
 					break;
 				case 3:
 					reservationsPanel.setVisible(true);
+					reservationsPanel.refreshData();
 					break;
 				case 4:
 					paymentPanel.setVisible(true);
+					paymentPanel.refreshData();
 					break;
+				case 5:
+					referencePanel.setVisible(true);
 				}
 				
 			}

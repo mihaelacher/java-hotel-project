@@ -15,7 +15,9 @@ import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -88,7 +90,7 @@ public class PaymentsPanel extends JPanel {
 
 		this.add(paymentsMidPanel);
 
-		myScroll.setPreferredSize(new Dimension(350, 150));
+		myScroll.setPreferredSize(new Dimension(550, 350));
 		paymentsDounPanel.add(myScroll);
 
 		this.add(paymentsDounPanel);
@@ -100,6 +102,11 @@ public class PaymentsPanel extends JPanel {
 		paymentsSearchBt.addActionListener(new SearchPaymentAction());
 		
 		clearPaymentsForm();
+		refreshTable(paymentsTable);
+	}
+	
+	public void refreshData()
+	{
 		refreshTable(paymentsTable);
 	}
 	
@@ -159,6 +166,7 @@ public class PaymentsPanel extends JPanel {
 				
 				state.setInt(2, id);
 				state.execute();
+				refreshTable(paymentsTable);
 				
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -185,7 +193,10 @@ public class PaymentsPanel extends JPanel {
 			// Get table data with help of joins in order to avoid using id values from
 			// referenced tables
 			state = conn.prepareStatement(
-					"select payments.id, payments.is_paid, guests.first_name, guests.last_name, reservations.total_amount from payments join reservations on payments.reservation_id = reservations.id join guests on guests.id = reservations.guest_id");
+					"select payments.id, CASE WHEN payments.is_paid = 1 THEN 'Платено' ELSE 'Неплатено' END as is_paid, "
+					+ "guests.first_name, guests.last_name, reservations.total_amount from payments "
+					+ "join reservations on payments.reservation_id = reservations.id "
+					+ "join guests on guests.id = reservations.guest_id");
 			result = state.executeQuery();
 			table.setModel(new MyModel(result));
 
